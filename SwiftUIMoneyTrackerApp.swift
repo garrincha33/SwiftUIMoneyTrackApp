@@ -13,7 +13,6 @@ struct SwiftUIMoneyTrackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            //step 5 update enviroment to mainview
             MainView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
