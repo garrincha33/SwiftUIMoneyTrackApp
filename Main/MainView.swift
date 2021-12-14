@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MainView: View {
-    //step 1 create a state variable This is a new Swift feature called a "property wrapper”. It’s a mechanism that allows you to wrap a type in another type that provides some functionality, while still exposing the underlying wrapped value to us directly
     @State private var shouldPresentAddCardForm = false
     
     var body: some View {
@@ -24,7 +23,6 @@ struct MainView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                 .frame(height: 280)
                 .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                //step 2 create a full screen cover
                 Spacer()
                     .fullScreenCover(isPresented: $shouldPresentAddCardForm, onDismiss: nil) {
                         AddCardForm()
@@ -76,7 +74,6 @@ struct MainView: View {
     
     var addCardButton: some View {
         Button(action: {
-            // step 3 trigger action
             shouldPresentAddCardForm.toggle()
         }, label: {
             Text("+ Card")
