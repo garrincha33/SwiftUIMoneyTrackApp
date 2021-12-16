@@ -8,31 +8,89 @@
 import SwiftUI
 
 struct MainView: View {
+    
+    //step 5 add core data fetch request code
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: true)],
+        animation: .default)
+    private var cards: FetchedResults<Card>
+    
     @State private var shouldPresentAddCardForm = false
     
     var body: some View {
         NavigationView {
             ScrollView {
                 
-                TabView {
-                    ForEach(0..<5) { num in
-                        CreditCardView()
-                            .padding(.bottom, 50)
+                //step 6 wrap inside a not empty check to prevent a crash
+                if !cards.isEmpty {
+                    TabView {
+                        //step 6 pull from card core data
+                        ForEach(cards) { card in
+                            CreditCardView()
+                                .padding(.bottom, 50)
+                        }
                     }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+                    .frame(height: 280)
+                    .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-                .frame(height: 280)
-                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                 Spacer()
                     .fullScreenCover(isPresented: $shouldPresentAddCardForm, onDismiss: nil) {
                         AddCardForm()
                     }
             }
             .navigationTitle("Credit Cards")
-            .navigationBarItems(trailing: addCardButton)
+            //step 2 add item button to leading
+            //step 3 - add components to CoreData
+            //step 8 add a hstack for mulitple buttons
+            .navigationBarItems(leading: HStack {
+                addItemButton
+                deleteAllButton
+            } ,
+            trailing: addCardButton)
         }
     }
+    //step 1 add item button to nav with a new view
+    var addItemButton: some View {
+        Button(action: {
+            
+            //step 4 create core data objects, view context is used for the storage
+            withAnimation {
+                let viewContext = PersistenceController.shared.container.viewContext
+                let card = Card(context: viewContext)
+                card.timestamp = Date()
+                
+                do {
+                    try viewContext.save()
+                } catch {
+                    
+                }
+            }
+            
+        }, label: {
+            Text("Add Item")})
+    }
     
+    //step 7 delete all objects button
+    var deleteAllButton: some View {
+        Button(action: {
+            withAnimation {
+                cards.forEach { card in
+                    viewContext.delete(card)
+                }
+                do {
+                    try viewContext.save()
+                } catch {
+                    
+                }
+            }
+            
+        }, label: {
+            Text("Delete All")})
+    }
+    
+
     struct CreditCardView: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
@@ -71,7 +129,7 @@ struct MainView: View {
             .padding(.top, 8)
         }
     }
-    
+
     var addCardButton: some View {
         Button(action: {
             shouldPresentAddCardForm.toggle()
@@ -89,7 +147,9 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
+        let viewContext = PersistenceController.shared.container.viewContext
         MainView()
-        //        AddCardForm()
+            //        AddCardForm()
+            .environment(\.managedObjectContext, viewContext)
     }
 }
