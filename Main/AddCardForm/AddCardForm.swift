@@ -9,7 +9,7 @@ import SwiftUI
 struct AddCardForm: View {
     
     @Environment(\.presentationMode) var presentationMode
-    //step 3 add more state storage
+
     @State private var name = ""
     @State private var cardNumber = ""
     @State private var limit = ""
@@ -22,15 +22,14 @@ struct AddCardForm: View {
     var body: some View {
         NavigationView {
             Form {
-                    //step 2 add sections to card form
+               
                 Section(header: Text("Card Info"))  {
                     TextField("Name", text: $name)
                     TextField("Credit Card Number", text: $cardNumber)
                         .keyboardType(.numberPad)
                     TextField("Credit Limit", text: $limit)
                         .keyboardType(.numberPad)
-                    
-                    //step 3 add a type with a picker
+          
                     Picker("Type", selection: $cardType) {
                         ForEach(["Visa", "MasterCard", "Revolut"], id: \.self) {
                             cardType in
@@ -44,7 +43,7 @@ struct AddCardForm: View {
 //                        Text("Revlout").tag("Revlout")
 //                    }
                 }
-                //step 4 add a expiration with a picker for month and year
+            
                 Section(header: Text("Expiration"))  {
                     Picker("Month", selection: $month) {
                         ForEach(1..<13, id: \.self) {
